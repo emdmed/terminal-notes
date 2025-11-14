@@ -92,7 +92,7 @@ const NoteDetailView = ({ note, onSave, onBack, onDelete }) => {
 					</Box>
 				) : (
 					<Box>
-						<Text inverse color={colors.green}>
+						<Text inverse bold color={colors.green}>
 							{" "}{title}{" "}
 						</Text>
 						{isEditing && editingField !== 'title' && (

@@ -7,7 +7,7 @@ const DeleteConfirmation = ({note, onConfirm, onCancel}) => {
 	const {height, width} = useScreenSize();
 
 	useInput((input, key) => {
-		if (input === 'y') {
+		if (input === 'd') {
 			onConfirm();
 		}
 		else if (input === 'n' || key.escape || input === 'q') {
@@ -54,7 +54,7 @@ const DeleteConfirmation = ({note, onConfirm, onCancel}) => {
 
 			<Box paddingX={1} marginTop={1}>
 				<Text color={colors.red}>
-					DELETE THIS NOTE? y=yes | n/ESC=cancel
+					DELETE THIS NOTE? d=delete | n/ESC=cancel
 				</Text>
 			</Box>
 		</Box>
