@@ -1,8 +1,29 @@
 {
 	"name": "terminal-notes",
-	"version": "0.0.0",
+	"version": "0.0.1",
+	"description": "A vim-style terminal note-taking application built with React and Ink",
+	"author": "",
 	"license": "MIT",
-	"bin": "dist/cli.js",
+	"keywords": [
+		"notes",
+		"terminal",
+		"cli",
+		"vim",
+		"tui",
+		"ink",
+		"react"
+	],
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"bugs": {
+		"url": ""
+	},
+	"homepage": "",
+	"bin": {
+		"terminal-notes": "dist/cli.js"
+	},
 	"type": "module",
 	"engines": {
 		"node": ">=16"
