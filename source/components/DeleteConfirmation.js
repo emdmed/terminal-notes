@@ -34,6 +34,12 @@ const DeleteConfirmation = ({note, onConfirm, onCancel}) => {
 				</Text>
 			</Box>
 
+			<Box marginBottom={1}>
+				<Text color={colors.red}>
+					Priority: {note.priority || 'none'}
+				</Text>
+			</Box>
+
 			<Box
 				flexDirection="column"
 				flexGrow={1}

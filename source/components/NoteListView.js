@@ -3,7 +3,7 @@ import { Box, Text, useInput } from 'ink';
 import { useScreenSize } from '../hooks/useScreenSize.js';
 import { colors } from '../utils/colors.js';
 
-const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd }) => {
+const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onToggleSort, onChangePriority }) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const { height, width } = useScreenSize();
 
@@ -39,6 +39,22 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd }) => {
 		else if (input === 'i' || input === 'a') {
 			onAdd();
 		}
+		else if (input === 's') {
+			onToggleSort();
+			setSelectedIndex(0); // Reset to top when sorting changes
+		}
+		else if (input === '1' && notes.length > 0) {
+			onChangePriority(notes[selectedIndex].id, 'high');
+		}
+		else if (input === '2' && notes.length > 0) {
+			onChangePriority(notes[selectedIndex].id, 'medium');
+		}
+		else if (input === '3' && notes.length > 0) {
+			onChangePriority(notes[selectedIndex].id, 'low');
+		}
+		else if (input === '4' && notes.length > 0) {
+			onChangePriority(notes[selectedIndex].id, 'none');
+		}
 		else if (key.return) {
 			if (notes.length > 0) {
 				onView(notes[selectedIndex].id);
@@ -66,6 +82,26 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd }) => {
 	const formatDate = dateString => {
 		const date = new Date(dateString);
 		return date.toLocaleDateString();
+	};
+
+	const getPriorityDisplay = priority => {
+		const priorityMap = {
+			high: '1',
+			medium: '2',
+			low: '3',
+			none: '-'
+		};
+		return priorityMap[priority] || '';
+	};
+
+	const getPriorityColor = priority => {
+		const colorMap = {
+			high: colors.highPriority,
+			medium: colors.mediumPriority,
+			low: colors.lowPriority,
+			none: colors.noPriority
+		};
+		return colorMap[priority] || colors.noPriority;
 	};
 
 	if (notes.length === 0) {
@@ -99,6 +135,16 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd }) => {
 
 	const maxContentLen = Math.max(10, width - 60);
 
+	const getSortModeDisplay = () => {
+		const sortModeMap = {
+			'priority-asc': 'Priority ↑',
+			'priority-desc': 'Priority ↓',
+			'date-asc': 'Date ↑',
+			'date-desc': 'Date ↓'
+		};
+		return sortModeMap[sortMode] || '';
+	};
+
 	return (
 		<Box
 			flexDirection="column"
@@ -117,22 +163,35 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd }) => {
 						[{selectedIndex + 1}/{notes.length}]
 					</Text>
 				)}
+				<Text color={colors.green} dimColor> | Sort: </Text>
+				<Text color={colors.green}>{getSortModeDisplay()}</Text>
 			</Box>
 
 			<Box flexDirection="column" flexGrow={1}>
 				{visibleNotes.map((note, visibleIdx) => {
 					const actualIndex = scrollOffset + visibleIdx;
 					const isSelected = actualIndex === selectedIndex;
+					const priorityDisplay = getPriorityDisplay(note.priority || 'none');
+					const priorityColor = getPriorityColor(note.priority || 'none');
 					return (
 						<Box key={note.id} flexDirection="row" justifyContent="space-between">
-							<Text
-								color={colors.green}
-								bold={isSelected}
-								inverse={isSelected}
-							>
-								{" "}{note.title} - {truncateContent(note.content, maxContentLen)}
-							</Text>
-							<Text inverse={isSelected} color={colors.green}>{formatDate(note.createdAt)}</Text>
+							<Box flexDirection="row">
+								<Text
+									color={colors.green}
+									bold={isSelected}
+									inverse={isSelected}
+								>
+									{" "}{note.title} - {truncateContent(note.content, maxContentLen)}
+								</Text>
+							</Box>
+							<Box flexDirection="row">
+								{priorityDisplay && (
+									<Text inverse={isSelected} color={priorityColor} bold>
+										{" "}{priorityDisplay}{" "}
+									</Text>
+								)}
+								<Text inverse={isSelected} color={colors.green}>{formatDate(note.createdAt)}</Text>
+							</Box>
 						</Box>
 					);
 				})}
@@ -140,7 +199,7 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd }) => {
 
 			<Box paddingX={1}>
 				<Text dimColor>
-					j/k=↓/↑ | g=top | G=bottom | i=insert | Enter=view | e=edit | d=delete | q=quit
+					j/k=↓/↑ | g=top | G=bottom | s=sort | 1/2/3/4=priority | i=insert | Enter=view | e=edit | d=delete | q=quit
 				</Text>
 			</Box>
 		</Box>

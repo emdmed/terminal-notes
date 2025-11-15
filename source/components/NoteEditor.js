@@ -8,32 +8,54 @@ const NoteEditor = ({note, onSave, onCancel}) => {
 	const [editingField, setEditingField] = useState('title');
 	const [title, setTitle] = useState(note ? note.title : '');
 	const [content, setContent] = useState(note ? note.content : '');
+	const [priority, setPriority] = useState(note ? note.priority || 'none' : 'none');
 	const {height, width} = useScreenSize();
+
+	const priorities = ['high', 'medium', 'low', 'none'];
 
 	useInput((input, key) => {
 		if (key.escape) {
 			onCancel();
 		}
-		else if (key.downArrow && editingField === 'title') {
-			setEditingField('content');
+		else if (key.downArrow) {
+			if (editingField === 'title') {
+				setEditingField('priority');
+			} else if (editingField === 'priority') {
+				setEditingField('content');
+			}
 		}
-		else if (key.upArrow && editingField === 'content') {
-			setEditingField('title');
+		else if (key.upArrow) {
+			if (editingField === 'content') {
+				setEditingField('priority');
+			} else if (editingField === 'priority') {
+				setEditingField('title');
+			}
+		}
+		else if (editingField === 'priority') {
+			if (key.leftArrow || input === 'h') {
+				const currentIndex = priorities.indexOf(priority);
+				const newIndex = currentIndex > 0 ? currentIndex - 1 : priorities.length - 1;
+				setPriority(priorities[newIndex]);
+			} else if (key.rightArrow || input === 'l') {
+				const currentIndex = priorities.indexOf(priority);
+				const newIndex = currentIndex < priorities.length - 1 ? currentIndex + 1 : 0;
+				setPriority(priorities[newIndex]);
+			}
 		}
 		else if (input === 's' && key.ctrl) {
 			if (title.trim() && content.trim()) {
-				onSave(title, content);
+				onSave(title, content, priority);
 			}
 		}
 	});
 
 	const handleTitleSubmit = () => {
-		setEditingField('content');
+		setEditingField('priority');
 	};
 
 	const handleContentSubmit = () => {
 		if (title.trim() && content.trim()) {
-			onSave(title, content);
+			onSave(title, content, priority);
 		}
 	};
 
@@ -53,9 +75,9 @@ const NoteEditor = ({note, onSave, onCancel}) => {
 			paddingX={2}
 			paddingY={1}
 		>
-			<Box marginBottom={1} flexDirection="column">
+			<Box marginBottom={1} flexDirection="row" alignItems="center">
 				{editingField === 'title' ? (
-					<Box>
+					<Box flexGrow={1}>
 						<TextInput
 							value={title}
 							onChange={handleTitleChange}
@@ -64,12 +86,24 @@ const NoteEditor = ({note, onSave, onCancel}) => {
 						/>
 					</Box>
 				) : (
-					<Box>
+					<>
 						<Text inverse color={colors.green}>
 							{" "}{title || 'Untitled'}{" "}
 						</Text>
 						<Text color={colors.green}> (↑ to edit)</Text>
-					</Box>
+					</>
+				)}
+				<Text color={colors.green}> | Priority: </Text>
+				{editingField === 'priority' ? (
+					<>
+						<Text inverse color={colors.green}> {priority.toUpperCase()} </Text>
+						<Text color={colors.green}> (←/→ or h/l)</Text>
+					</>
+				) : (
+					<>
+						<Text color={colors.green}>{priority}</Text>
+						{editingField === 'content' && <Text color={colors.green}> (↑ to edit)</Text>}
+					</>
 				)}
 			</Box>
 
@@ -102,7 +136,7 @@ const NoteEditor = ({note, onSave, onCancel}) => {
 
 			<Box paddingX={1} marginTop={1}>
 				<Text dimColor>
-					↑/↓=switch field | Enter=next/save | Ctrl+S=save | ESC=cancel
+					↑/↓=switch field | ←/→ or h/l=change priority | Enter=next/save | Ctrl+S=save | ESC=cancel
 				</Text>
 			</Box>
 		</Box>

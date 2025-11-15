@@ -48,13 +48,14 @@ export function saveNotes(notes) {
 	}
 }
 
-export function addNote(title, content) {
+export function addNote(title, content, priority = 'none') {
 	const notes = loadNotes();
 
 	const newNote = {
 		id: Date.now().toString(),
 		title: title.trim(),
 		content: content.trim(),
+		priority: priority,
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 	};
@@ -82,7 +83,7 @@ export function getNoteById(id) {
 	return notes.find(note => note.id === id);
 }
 
-export function updateNote(id, title, content) {
+export function updateNote(id, title, content, priority = null) {
 	const notes = loadNotes();
 	const noteIndex = notes.findIndex(note => note.id === id);
 
@@ -96,6 +97,10 @@ export function updateNote(id, title, content) {
 		content: content.trim(),
 		updatedAt: new Date().toISOString(),
 	};
+
+	if (priority !== null) {
+		notes[noteIndex].priority = priority;
+	}
 
 	saveNotes(notes);
 	return notes[noteIndex];
