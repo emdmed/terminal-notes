@@ -148,7 +148,8 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 		scrollOffset + maxVisibleNotes,
 	);
 
-	const maxContentLen = Math.max(10, width - 60);
+	const calculatedLen = Math.max(10, width - 60);
+	const maxContentLen = Math.min(20, calculatedLen);
 
 	const getSortModeDisplay = () => {
 		const sortModeMap = {
@@ -188,6 +189,7 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 					const isSelected = actualIndex === selectedIndex;
 					const priorityDisplay = getPriorityDisplay(note.priority || 'none');
 					const priorityColor = getPriorityColor(note.priority || 'none');
+					const linkCount = note.links ? note.links.length : 0;
 					return (
 						<Box key={note.id} flexDirection="row" justifyContent="space-between">
 							<Box flexDirection="row">
@@ -199,6 +201,11 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 									{" "}{note.title}{" - "}
 								</Text>
 								<Text inverse={isSelected} marginLeft={1} color={colors.primary} dimColor>{" "}{truncateContent(note.content, maxContentLen)}</Text>
+								{linkCount > 0 && (
+									<Text color={colors.primary} >
+										{" "}🔗{linkCount}
+									</Text>
+								)}
 							</Box>
 							<Box flexDirection="row">
 								{priorityDisplay && (

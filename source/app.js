@@ -54,11 +54,11 @@ function AppContent() {
 		setView('edit');
 	};
 
-	const handleSaveNote = (title, content, priority) => {
+	const handleSaveNote = (title, content, priority, links) => {
 		if (selectedNoteId) {
-			updateNote(selectedNoteId, title, content, priority);
+			updateNote(selectedNoteId, title, content, priority, links);
 		} else {
-			addNote(title, content, priority);
+			addNote(title, content, priority, links);
 		}
 		refreshNotes();
 		setSelectedNoteId(null);
@@ -94,7 +94,7 @@ function AppContent() {
 	const handleChangePriority = (noteId, priority) => {
 		const note = getNoteById(noteId);
 		if (note) {
-			updateNote(noteId, note.title, note.content, priority);
+			updateNote(noteId, note.title, note.content, priority, note.links);
 			refreshNotes();
 		}
 	};

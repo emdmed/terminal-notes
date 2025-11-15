@@ -117,6 +117,20 @@ function loadData() {
 			data.notes = [];
 		}
 
+		// Migration: ensure all notes have links array
+		let needsMigration = false;
+		data.notes = data.notes.map(note => {
+			if (!Array.isArray(note.links)) {
+				needsMigration = true;
+				return { ...note, links: [] };
+			}
+			return note;
+		});
+
+		if (needsMigration) {
+			fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+		}
+
 		return data;
 	} catch (error) {
 		console.error('Error loading data:', error.message);
@@ -160,7 +174,7 @@ export function saveNotes(notes) {
 	}
 }
 
-export function addNote(title, content, priority = 'none') {
+export function addNote(title, content, priority = 'none', links = []) {
 	const notes = loadNotes();
 
 	const newNote = {
@@ -168,6 +182,7 @@ export function addNote(title, content, priority = 'none') {
 		title: title.trim(),
 		content: content.trim(),
 		priority: priority,
+		links: links || [],
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 	};
@@ -195,7 +210,7 @@ export function getNoteById(id) {
 	return notes.find(note => note.id === id);
 }
 
-export function updateNote(id, title, content, priority = null) {
+export function updateNote(id, title, content, priority = null, links = null) {
 	const notes = loadNotes();
 	const noteIndex = notes.findIndex(note => note.id === id);
 
@@ -212,6 +227,10 @@ export function updateNote(id, title, content, priority = null) {
 
 	if (priority !== null) {
 		notes[noteIndex].priority = priority;
+	}
+
+	if (links !== null) {
+		notes[noteIndex].links = links;
 	}
 
 	saveNotes(notes);
