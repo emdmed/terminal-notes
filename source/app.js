@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useInput, useApp} from 'ink';
 import NoteListView from './components/NoteListView.js';
-import NoteDetailView from './components/NoteDetailView.js';
 import NoteEditor from './components/NoteEditor.js';
 import DeleteConfirmation from './components/DeleteConfirmation.js';
 import {
@@ -17,6 +16,7 @@ export default function App() {
 	const [view, setView] = useState('list');
 	const [notes, setNotes] = useState([]);
 	const [selectedNoteId, setSelectedNoteId] = useState(null);
+	const [editorMode, setEditorMode] = useState('edit'); // 'view' or 'edit'
 	const [sortMode, setSortMode] = useState('priority-asc'); // priority-asc, priority-desc, date-asc, date-desc
 
 	useEffect(() => {
@@ -37,16 +37,19 @@ export default function App() {
 
 	const handleAdd = () => {
 		setSelectedNoteId(null);
+		setEditorMode('edit');
 		setView('edit');
 	};
 
 	const handleView = noteId => {
 		setSelectedNoteId(noteId);
-		setView('detail');
+		setEditorMode('view');
+		setView('edit');
 	};
 
 	const handleEdit = noteId => {
 		setSelectedNoteId(noteId);
+		setEditorMode('edit');
 		setView('edit');
 	};
 
@@ -61,11 +64,6 @@ export default function App() {
 		setView('list');
 	};
 
-	const handleSaveFromDetail = (noteId, title, content, priority) => {
-		updateNote(noteId, title, content, priority);
-		refreshNotes();
-	};
-
 	const handleDeleteRequest = noteId => {
 		setSelectedNoteId(noteId);
 		setView('delete');
@@ -77,11 +75,6 @@ export default function App() {
 			refreshNotes();
 			setSelectedNoteId(null);
 		}
-		setView('list');
-	};
-
-	const handleBackToList = () => {
-		setSelectedNoteId(null);
 		setView('list');
 	};
 
@@ -146,21 +139,9 @@ export default function App() {
 		);
 	}
 
-	if (view === 'detail') {
-		const note = getNoteById(selectedNoteId);
-		return (
-			<NoteDetailView
-				note={note}
-				onSave={handleSaveFromDetail}
-				onBack={handleBackToList}
-				onDelete={handleDeleteRequest}
-			/>
-		);
-	}
-
 	if (view === 'edit') {
 		const note = selectedNoteId ? getNoteById(selectedNoteId) : null;
-		return <NoteEditor note={note} onSave={handleSaveNote} onCancel={handleCancel} />;
+		return <NoteEditor note={note} onSave={handleSaveNote} onCancel={handleCancel} mode={editorMode} />;
 	}
 
 	if (view === 'delete') {
