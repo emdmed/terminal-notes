@@ -4,7 +4,7 @@ import { useScreenSize } from '../hooks/useScreenSize.js';
 import { useTheme } from '../contexts/ThemeContext.js';
 import ThemeSelector from './ThemeSelector.js';
 
-const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onToggleSort, onChangePriority }) => {
+const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onToggleSort, onChangePriority, onToggleObscured }) => {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [showThemeSelector, setShowThemeSelector] = useState(false);
 	const { height, width } = useScreenSize();
@@ -62,6 +62,9 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 		}
 		else if (input === '4' && notes.length > 0) {
 			onChangePriority(notes[selectedIndex].id, 'none');
+		}
+		else if (input === 'x' && notes.length > 0) {
+			onToggleObscured(notes[selectedIndex].id);
 		}
 		else if (key.return) {
 			if (notes.length > 0) {
@@ -200,7 +203,7 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 								>
 									{" "}{note.title}{" - "}
 								</Text>
-								<Text inverse={isSelected} marginLeft={1} color={colors.primary} dimColor>{" "}{truncateContent(note.content, maxContentLen)}</Text>
+								<Text inverse={isSelected} marginLeft={1} color={colors.primary} dimColor>{" "}{note.obscured ? '<obscured>' : truncateContent(note.content, maxContentLen)}</Text>
 								{linkCount > 0 && (
 									<Text color={colors.primary} >
 										{" "}🔗{linkCount}
@@ -222,7 +225,7 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 
 			<Box paddingX={1}>
 				<Text dimColor>
-					j/k=↓/↑ | g=top | G=bottom | s=sort | t=theme | 1/2/3/4=priority | i=insert | Enter=view | e=edit | d=delete | q=quit
+					j/k=↓/↑ | g=top | G=bottom | s=sort | t=theme | 1/2/3/4=priority | x=toggle obscured | i=insert | Enter=view | e=edit | d=delete | q=quit
 				</Text>
 			</Box>
 		</Box>

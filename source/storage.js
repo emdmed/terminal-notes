@@ -117,14 +117,22 @@ function loadData() {
 			data.notes = [];
 		}
 
-		// Migration: ensure all notes have links array
+		// Migration: ensure all notes have links array and obscured property
 		let needsMigration = false;
 		data.notes = data.notes.map(note => {
+			const updatedNote = { ...note };
+
 			if (!Array.isArray(note.links)) {
 				needsMigration = true;
-				return { ...note, links: [] };
+				updatedNote.links = [];
 			}
-			return note;
+
+			if (note.obscured === undefined) {
+				needsMigration = true;
+				updatedNote.obscured = false;
+			}
+
+			return updatedNote;
 		});
 
 		if (needsMigration) {
@@ -174,7 +182,7 @@ export function saveNotes(notes) {
 	}
 }
 
-export function addNote(title, content, priority = 'none', links = []) {
+export function addNote(title, content, priority = 'none', links = [], obscured = false) {
 	const notes = loadNotes();
 
 	const newNote = {
@@ -183,6 +191,7 @@ export function addNote(title, content, priority = 'none', links = []) {
 		content: content.trim(),
 		priority: priority,
 		links: links || [],
+		obscured: obscured,
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 	};
@@ -210,7 +219,7 @@ export function getNoteById(id) {
 	return notes.find(note => note.id === id);
 }
 
-export function updateNote(id, title, content, priority = null, links = null) {
+export function updateNote(id, title, content, priority = null, links = null, obscured = null) {
 	const notes = loadNotes();
 	const noteIndex = notes.findIndex(note => note.id === id);
 
@@ -231,6 +240,10 @@ export function updateNote(id, title, content, priority = null, links = null) {
 
 	if (links !== null) {
 		notes[noteIndex].links = links;
+	}
+
+	if (obscured !== null) {
+		notes[noteIndex].obscured = obscured;
 	}
 
 	saveNotes(notes);

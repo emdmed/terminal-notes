@@ -54,11 +54,11 @@ function AppContent() {
 		setView('edit');
 	};
 
-	const handleSaveNote = (title, content, priority, links) => {
+	const handleSaveNote = (title, content, priority, links, obscured) => {
 		if (selectedNoteId) {
-			updateNote(selectedNoteId, title, content, priority, links);
+			updateNote(selectedNoteId, title, content, priority, links, obscured);
 		} else {
-			addNote(title, content, priority, links);
+			addNote(title, content, priority, links, obscured);
 		}
 		refreshNotes();
 		setSelectedNoteId(null);
@@ -94,7 +94,16 @@ function AppContent() {
 	const handleChangePriority = (noteId, priority) => {
 		const note = getNoteById(noteId);
 		if (note) {
-			updateNote(noteId, note.title, note.content, priority, note.links);
+			updateNote(noteId, note.title, note.content, priority, note.links, note.obscured);
+			refreshNotes();
+		}
+	};
+
+	const handleToggleObscured = (noteId) => {
+		const note = getNoteById(noteId);
+		if (note) {
+			const newObscuredState = !note.obscured;
+			updateNote(noteId, note.title, note.content, note.priority, note.links, newObscuredState);
 			refreshNotes();
 		}
 	};
@@ -136,6 +145,7 @@ function AppContent() {
 				sortMode={sortMode}
 				onToggleSort={handleToggleSort}
 				onChangePriority={handleChangePriority}
+				onToggleObscured={handleToggleObscured}
 			/>
 		);
 	}

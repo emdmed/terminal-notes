@@ -22,6 +22,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 	const [content, setContent] = useState(note ? note.content : '');
 	const [priority, setPriority] = useState(note ? note.priority || 'none' : 'none');
 	const [links, setLinks] = useState(note ? (note.links || []) : []);
+	const [obscured, setObscured] = useState(note ? note.obscured || false : false);
 	const [addingLink, setAddingLink] = useState(false);
 	const [newLinkUrl, setNewLinkUrl] = useState('');
 	const [newLinkTitle, setNewLinkTitle] = useState('');
@@ -56,6 +57,12 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 		if (isViewMode) {
 			if (key.return) {
 				setIsViewMode(false);
+				return;
+			}
+			if (input === 'x') {
+				const newObscuredState = !obscured;
+				setObscured(newObscuredState);
+				onSave(title, content, priority, links, newObscuredState);
 				return;
 			}
 			if (input === 'o' && links.length > 0) {
@@ -103,6 +110,11 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 			return;
 		}
 
+		if (input === 'x') {
+			setObscured(!obscured);
+			return;
+		}
+
 		if (input === 'l' && key.ctrl) {
 			setAddingLink(true);
 			return;
@@ -110,7 +122,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 
 		if (input === 's' && key.ctrl) {
 			if (title.trim() && content.trim()) {
-				onSave(title, content, priority, links);
+				onSave(title, content, priority, links, obscured);
 			}
 			return;
 		}
@@ -122,7 +134,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 
 	const handleContentSubmit = () => {
 		if (title.trim() && content.trim()) {
-			onSave(title, content, priority, links);
+			onSave(title, content, priority, links, obscured);
 		}
 	};
 
@@ -165,7 +177,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 
 		// Auto-save when deleting in view mode
 		if (isViewMode && note) {
-			onSave(title, content, priority, updatedLinks);
+			onSave(title, content, priority, updatedLinks, obscured);
 		}
 	};
 
@@ -208,7 +220,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 					paddingX={1}
 					paddingY={1}
 				>
-					<Text color={colors.primary}>{content || '(empty)'}</Text>
+					<Text color={colors.primary}>{obscured ? '<obscured>' : (content || '(empty)')}</Text>
 
 					{links.length > 0 && (
 						<Box flexDirection="column" marginTop={1} >
@@ -235,7 +247,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 
 				<Box paddingX={1} marginTop={1}>
 					<Text dimColor>
-						Enter=edit | {links.length > 0 ? '↑/↓=navigate links | O=open link | D=delete link | ' : ''}ESC=back
+						Enter=edit | X=toggle obscured | {links.length > 0 ? '↑/↓=navigate links | O=open link | D=delete link | ' : ''}ESC=back
 					</Text>
 				</Box>
 			</Box>
@@ -375,7 +387,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 				<Text dimColor>
 					{addingLink
 						? 'Enter URL and title | ESC=cancel link'
-						: '↑/↓=switch title/content | Tab=cycle priority | Ctrl+L=add link | Ctrl+S=save | ESC=cancel'
+						: '↑/↓=switch title/content | Tab=cycle priority | X=toggle obscured | Ctrl+L=add link | Ctrl+S=save | ESC=cancel'
 					}
 				</Text>
 			</Box>

@@ -49,7 +49,7 @@ const DeleteConfirmation = ({note, onConfirm, onCancel}) => {
 				paddingX={1}
 				paddingY={1}
 			>
-				<Text color={colors.danger}>{note.content}</Text>
+				<Text color={colors.danger}>{note.obscured ? '<obscured>' : note.content}</Text>
 			</Box>
 
 			<Box marginTop={1}>
