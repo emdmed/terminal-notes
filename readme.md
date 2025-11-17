@@ -6,6 +6,7 @@ A vim-style terminal note-taking application built with React and Ink. Features 
 
 - **Full TUI Interface** - List view shows all notes with title and preview
 - **Vim Keybindings** - Navigate and manage notes using familiar vim controls
+- **Multiline Notes** - Write multi-paragraph notes with full text editing support
 - **Priority System** - Organize notes with 4 priority levels (high, medium, low, none)
 - **Flexible Sorting** - Sort by priority or date (ascending/descending)
 - **View & Edit Modes** - View notes in read-only mode, press Enter to edit
@@ -76,9 +77,10 @@ terminal-notes
 |-----|--------|
 | `↑` | Switch to title editing |
 | `↓` | Switch to content editing |
+| `←` / `→` | Navigate cursor left/right in text |
 | `Tab` | Cycle through priorities (high → medium → low → none) |
 | `Ctrl+L` | Add a new link to the note |
-| `Enter` | Move to next field / Save note |
+| `Enter` | In title: move to content field. In content: insert new line |
 | `Ctrl+S` | Save note |
 | `ESC` | Cancel and return to list |
 
@@ -141,9 +143,10 @@ All notes are stored in a JSON file located at:
 Each note contains:
 - `id` - Unique identifier
 - `title` - Note title
-- `content` - Note content/body
+- `content` - Note content/body (supports multiline text with newlines)
 - `priority` - Priority level (high, medium, low, none)
 - `links` - Array of links with URL and optional title
+- `obscured` - Boolean flag to hide sensitive content
 - `createdAt` - Creation timestamp (ISO 8601)
 - `updatedAt` - Last modification timestamp (ISO 8601)
 
@@ -191,7 +194,9 @@ source/
 └── components/
     ├── NoteListView.js         # Main list view with vim controls
     ├── NoteEditor.js           # Create/edit note form
-    └── DeleteConfirmation.js   # Delete confirmation dialog
+    ├── MultilineInput.js       # Custom multiline text input component
+    ├── DeleteConfirmation.js   # Delete confirmation dialog
+    └── ThemeSelector.js        # Theme selection component
 ```
 
 ## Technology Stack
