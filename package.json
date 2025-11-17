@@ -31,6 +31,7 @@
 	"scripts": {
 		"start": "npm run build && node dist/cli.js",
 		"build": "babel --out-dir=dist source",
+		"postbuild": "chmod +x dist/cli.js",
 		"dev": "babel --out-dir=dist --watch source",
 		"test": "prettier --check . && xo && ava"
 	},

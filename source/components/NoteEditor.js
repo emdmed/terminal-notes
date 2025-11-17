@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
+import MultilineInput from './MultilineInput.js';
 import { useScreenSize } from '../hooks/useScreenSize.js';
 import { useTheme } from '../contexts/ThemeContext.js';
 import { exec } from 'child_process';
@@ -133,9 +134,8 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 	};
 
 	const handleContentSubmit = () => {
-		if (title.trim() && content.trim()) {
-			onSave(title, content, priority, links, obscured);
-		}
+		// Enter no longer saves - use Ctrl+S to save
+		// This allows multiline notes
 	};
 
 	const handleTitleChange = value => {
@@ -303,11 +303,12 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 			>
 				{editingField === 'content' && !addingLink ? (
 					<Box flexDirection="column">
-						<TextInput
+						<MultilineInput
 							value={content}
 							onChange={handleContentChange}
 							onSubmit={handleContentSubmit}
 							placeholder="Enter note content..."
+							focus={true}
 						/>
 					</Box>
 				) : (
@@ -387,9 +388,10 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 				<Text dimColor>
 					{addingLink
 						? 'Enter URL and title | ESC=cancel link'
-						: '↑/↓=switch title/content | Tab=cycle priority | X=toggle obscured | Ctrl+L=add link | Ctrl+S=save | ESC=cancel'
+						: '↑/↓=switch title/content | Tab=cycle priority | X=toggle obscured | Ctrl+L=add link | ESC=cancel'
 					}
 				</Text>
+				<Text color={colors.primary}>{" "}Ctrl+S=save{" "}</Text>
 			</Box>
 		</Box>
 	);
