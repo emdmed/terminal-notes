@@ -87,10 +87,11 @@ const NoteListView = ({ notes, onView, onEdit, onDelete, onAdd, sortMode, onTogg
 	});
 
 	const truncateContent = (content, maxLen) => {
-		if (content.length <= maxLen) {
-			return content;
+		const singleLine = content.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+		if (singleLine.length <= maxLen) {
+			return singleLine;
 		}
-		return content.substring(0, maxLen) + '...';
+		return singleLine.substring(0, maxLen) + '...';
 	};
 
 	const formatDate = dateString => {
