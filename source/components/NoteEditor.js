@@ -90,21 +90,16 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 			return; // Let TextInput handle it
 		}
 
-		if (key.downArrow) {
+		if (key.tab && !key.shift) {
 			if (editingField === 'title') {
 				setEditingField('content');
-			}
-			return;
-		}
-
-		if (key.upArrow) {
-			if (editingField === 'content') {
+			} else if (editingField === 'content') {
 				setEditingField('title');
 			}
 			return;
 		}
 
-		if (key.tab) {
+		if (key.tab && key.shift) {
 			const currentIndex = priorities.indexOf(priority);
 			const newIndex = (currentIndex + 1) % priorities.length;
 			setPriority(priorities[newIndex]);
@@ -279,7 +274,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 								{" "}{title || 'Untitled'}{" "}
 							</Text>
 							{!addingLink && (
-								<Text color={colors.primary}> (↑ to edit)</Text>
+								<Text color={colors.primary}> (Tab to edit)</Text>
 							)}
 						</>
 					)}
@@ -288,7 +283,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 					<Text color={colors.primary}>Priority: </Text>
 					<Text color={getPriorityColor(priority)} bold>{priority}</Text>
 					{!addingLink && (
-						<Text color={colors.primary} dimColor> (Tab)</Text>
+						<Text color={colors.primary} dimColor> (Shift+Tab)</Text>
 					)}
 				</Box>
 			</Box>
@@ -316,7 +311,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 						<Text color={colors.primary}>{content || '(empty)'}</Text>
 						{!addingLink && (
 							<Text color={colors.primary} marginTop={1}>
-								(↓ to edit)
+								(Tab to edit)
 							</Text>
 						)}
 					</Box>
@@ -388,7 +383,7 @@ const NoteEditor = ({ note, onSave, onCancel, mode = 'edit' }) => {
 				<Text dimColor>
 					{addingLink
 						? 'Enter URL and title | ESC=cancel link'
-						: '↑/↓=switch title/content | Tab=cycle priority | X=toggle obscured | Ctrl+L=add link | ESC=cancel'
+						: 'Tab=switch title/content | Shift+Tab=cycle priority | X=toggle obscured | Ctrl+L=add link | ESC=cancel'
 					}
 				</Text>
 				<Text color={colors.primary}>{" "}Ctrl+S=save{" "}</Text>
